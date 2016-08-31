@@ -101,7 +101,7 @@ int handle_input(char* buffer, int buffer_size, char* reply_buffer) {
 }
 
 void setup() {
-    Serial.begin(9600);    
+    Serial.begin(9600);
     Serial.println("Starting babbler-powered device, type help for list of commands");
     
     pinMode(LED_PIN, OUTPUT);

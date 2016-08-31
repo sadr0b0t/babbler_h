@@ -79,7 +79,7 @@ void babbler_tasks(){
 
 void setup() {
     #ifdef DEBUG_SERIAL
-        Serial.begin(9600);    
+        Serial.begin(9600);
         Serial.println("Starting babbler-powered device, type help for list of commands");
     #endif
     

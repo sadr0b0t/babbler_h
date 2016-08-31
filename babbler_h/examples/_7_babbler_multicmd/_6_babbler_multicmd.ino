@@ -49,7 +49,7 @@ int handle_input(char* buffer, int buffer_size, char* reply_buffer) {
 }
 
 void setup() {
-    Serial.begin(9600);    
+    Serial.begin(9600);
     Serial.println("Starting babbler_h test...");
     
     babbler_serial_setup(handle_input, BABBLER_SERIAL_SKIP_PORT_INIT);
