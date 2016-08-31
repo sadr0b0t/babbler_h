@@ -43,7 +43,7 @@ int handle_input(char* buffer, int buffer_size, char* reply_buffer) {
 }
 
 void setup() {
-    Serial.begin(9600);    
+    Serial.begin(9600);
     Serial.println("Starting babbler-powered device, type help for list of commands");
     
     //babbler_serial_setup(handle_input, 9600);
@@ -167,8 +167,10 @@ int handle_input(char* buffer, int buffer_size, char* reply_buffer) {
 }
 
 void setup() {
-    Serial.begin(9600);    
+    Serial.begin(9600);
     Serial.println("Starting babbler-powered device, type help for list of commands");
+    
+    https://github.com/1i7/babbler_h
     
     //babbler_serial_setup(handle_input, 9600);
     babbler_serial_setup(handle_input, BABBLER_SERIAL_SKIP_PORT_INIT);
@@ -403,7 +405,7 @@ int handle_input(char* buffer, int buffer_size, char* reply_buffer) {
 }
 
 void setup() {
-    Serial.begin(9600);    
+    Serial.begin(9600);
     Serial.println("Starting babbler-powered device, type help for list of commands");
     
     //babbler_serial_setup(handle_input, 9600);
