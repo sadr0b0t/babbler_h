@@ -107,6 +107,8 @@ void setup() {
     Serial.begin(9600);    
     Serial.println("Starting babbler-powered device, type help for list of commands");
     
+    pinMode(LED_PIN, OUTPUT);
+    
     //babbler_serial_setup(handle_input, 9600);
     babbler_serial_setup(handle_input, BABBLER_SERIAL_SKIP_PORT_INIT);
 }
