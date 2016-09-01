@@ -7,7 +7,11 @@
 
 extern const babbler_cmd_t CMD_HELP = {
     "help",
-    &cmd_help, 
+    &cmd_help
+};
+
+extern const babbler_man_t MAN_HELP = {
+    "help",
     "list available commands or show detailed help on selected command", 
     "SYNOPSIS\n"
     "    help\n"
@@ -21,17 +25,14 @@ extern const babbler_cmd_t CMD_HELP = {
     "    --list - list all available commands separated by space"
 };
 
-// версия для экономии памяти
-extern const babbler_cmd_t CMD_HELP_SHORT = {
-    "help",
-    &cmd_help, 
-    NULL, 
-    NULL
-};
 
 extern const babbler_cmd_t CMD_PING = {
     "ping",
-    &cmd_ping,
+    &cmd_ping
+};
+
+extern const babbler_man_t MAN_PING = {
+    "ping",
     "check if device is available", 
     "SYNOPSIS\n"
     "    ping\n"
@@ -39,13 +40,6 @@ extern const babbler_cmd_t CMD_PING = {
     "Check if device is available, returns \"ok\" if device is ok"
 };
 
-// версия для экономии памяти
-extern const babbler_cmd_t CMD_PING_SHORT = {
-    "ping",
-    &cmd_ping,
-    NULL, 
-    NULL
-};
 
 /** 
  * Вывести список команд.
@@ -55,35 +49,35 @@ int cmd_help(char* reply_buffer, int argc, char *argv[]) {
         // парамаетры не заданы или задан только 1й параметр (имя команды) - 
         // выводим список команд с кратким описанием
         sprintf(reply_buffer, "Commands: \n");
-        for(int i=0; i < BABBLER_COMMANDS_COUNT; i++) {
-            sprintf(reply_buffer+strlen(reply_buffer), "%s\n", BABBLER_COMMANDS[i].name);
-            if(BABBLER_COMMANDS[i].short_descr != NULL) {
-                sprintf(reply_buffer+strlen(reply_buffer), "    %s\n", BABBLER_COMMANDS[i].short_descr);
+        for(int i=0; i < BABBLER_MANUALS_COUNT; i++) {
+            sprintf(reply_buffer+strlen(reply_buffer), "%s\n", BABBLER_MANUALS[i].name);
+            if(BABBLER_MANUALS[i].short_descr != NULL) {
+                sprintf(reply_buffer+strlen(reply_buffer), "    %s\n", BABBLER_MANUALS[i].short_descr);
             }
         }
     } else if(strcmp("--list", argv[1]) == 0) {
         // вывести список всех команд через пробел
-        for(int i=0; i < BABBLER_COMMANDS_COUNT; i++) {
-            sprintf(reply_buffer+strlen(reply_buffer), "%s", BABBLER_COMMANDS[i].name);
+        for(int i=0; i < BABBLER_MANUALS_COUNT; i++) {
+            sprintf(reply_buffer+strlen(reply_buffer), "%s", BABBLER_MANUALS[i].name);
             // добавлять пробел после каждой команды, кроме последней
-            if(i < BABBLER_COMMANDS_COUNT - 1) {
+            if(i < BABBLER_MANUALS_COUNT - 1) {
                 sprintf(reply_buffer+strlen(reply_buffer), " ");
             }
         }
     } else {
         // вывести справку по указанной команде
         bool cmd_found = false;
-        for(int i=0; i < BABBLER_COMMANDS_COUNT && !cmd_found; i++) {
-            if(strcmp(BABBLER_COMMANDS[i].name, argv[1]) == 0) {
+        for(int i=0; i < BABBLER_MANUALS_COUNT && !cmd_found; i++) {
+            if(strcmp(BABBLER_MANUALS[i].name, argv[1]) == 0) {
                 sprintf(reply_buffer+strlen(reply_buffer), 
-                    "%s - manual\n", BABBLER_COMMANDS[i].name);
-                if(BABBLER_COMMANDS[i].short_descr != NULL && BABBLER_COMMANDS[i].manual != NULL) {
+                    "%s - manual\n", BABBLER_MANUALS[i].name);
+                if(BABBLER_MANUALS[i].short_descr != NULL && BABBLER_MANUALS[i].manual != NULL) {
                     sprintf(reply_buffer+strlen(reply_buffer), 
                         "NAME\n"
                         "    %s - %s\n"
                         "%s\n",
-                        BABBLER_COMMANDS[i].name, BABBLER_COMMANDS[i].short_descr, 
-                        BABBLER_COMMANDS[i].manual);
+                        BABBLER_MANUALS[i].name, BABBLER_MANUALS[i].short_descr, 
+                        BABBLER_MANUALS[i].manual);
                 }
                 
                 cmd_found = true;

@@ -15,6 +15,20 @@ extern const babbler_cmd_t BABBLER_COMMANDS[] = {
 /** Number of registered commands*/
 extern const int BABBLER_COMMANDS_COUNT = sizeof(BABBLER_COMMANDS)/sizeof(babbler_cmd_t);
 
+
+/** Руководства для зарегистрированных команд */
+/** Manuals for registered commands */
+extern const babbler_man_t BABBLER_MANUALS[] = {
+    // команды из babbler_cmd_core.h
+    // commands from babbler_cmd.core.h
+    MAN_HELP,
+    MAN_PING,
+};
+
+/** Количество руководств для зарегистрированных команд */
+/** Number of manuals for registered commands */
+extern const int BABBLER_MANUALS_COUNT = sizeof(BABBLER_MANUALS)/sizeof(babbler_man_t);
+
 /**
  * Обработать входные данные: разобрать строку, выполнить одну или 
  * несколько команд, записать ответ

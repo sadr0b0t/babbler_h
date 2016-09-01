@@ -139,7 +139,13 @@ babbler_cmd_t CMD_PIN_MODE = {
     "pin_mode",
     /* указатель на функцию с реализацией команды */ 
     /* pointer to function with command implementation*/ 
-    &cmd_pin_mode,
+    &cmd_pin_mode
+};
+
+babbler_man_t MAN_PIN_MODE = {
+    /* имя команды */ 
+    /* command name */
+    "pin_mode",
     /* краткое описание */ 
     /* short description */
     "set pin mode: INPUT/OUTPUT",
@@ -160,7 +166,13 @@ babbler_cmd_t CMD_DIGITAL_WRITE = {
     "digital_write",
     /* указатель на функцию с реализацией команды */ 
     /* pointer to function with command implementation*/ 
-    &cmd_digital_write,
+    &cmd_digital_write
+};
+
+babbler_man_t MAN_DIGITAL_WRITE = {
+    /* имя команды */ 
+    /* command name */
+    "digital_write",
     /* краткое описание */ 
     /* short description */
     "write digital value HIGH/LOW (1/0) to output port", 
@@ -192,6 +204,24 @@ extern const babbler_cmd_t BABBLER_COMMANDS[] = {
 /** Количество зарегистрированных команд */
 /** Number of registered commands*/
 extern const int BABBLER_COMMANDS_COUNT = sizeof(BABBLER_COMMANDS)/sizeof(babbler_cmd_t);
+
+/** Руководства для зарегистрированных команд */
+/** Manuals for registered commands */
+extern const babbler_man_t BABBLER_MANUALS[] = {
+    // команды из babbler_cmd_core.h
+    // commands from babbler_cmd.core.h
+    MAN_HELP,
+    MAN_PING,
+    
+    // пользовательские команды
+    // custom commands
+    MAN_PIN_MODE,
+    MAN_DIGITAL_WRITE
+};
+
+/** Количество руководств для зарегистрированных команд */
+/** Number of manuals for registered commands */
+extern const int BABBLER_MANUALS_COUNT = sizeof(BABBLER_MANUALS)/sizeof(babbler_man_t);
 
 /**
  * Обработать входные данные: разобрать строку, выполнить одну или 

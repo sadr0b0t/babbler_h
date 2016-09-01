@@ -15,7 +15,10 @@ extern const char* DEVICE_URI;
 
 extern const babbler_cmd_t CMD_NAME = {
     "name",
-    &cmd_name,
+    &cmd_name
+};
+extern const babbler_man_t MAN_NAME = {
+    "name",
     "get device name", 
     "SYNOPSIS" 
     "    name" 
@@ -25,7 +28,10 @@ extern const babbler_cmd_t CMD_NAME = {
 
 extern const babbler_cmd_t CMD_MODEL = {
     "model",
-    &cmd_model,
+    &cmd_model
+};
+extern const babbler_man_t MAN_MODEL = {
+    "model",
     "get device model",
     "SYNOPSIS" 
     "    model" 
@@ -35,7 +41,10 @@ extern const babbler_cmd_t CMD_MODEL = {
 
 extern const babbler_cmd_t CMD_SERIAL_NUMBER = {
     "serial_number",
-    &cmd_serial_number, 
+    &cmd_serial_number
+};
+extern const babbler_man_t MAN_SERIAL_NUMBER = {
+    "serial_number",
     "get device serial number",
     "SYNOPSIS" 
     "    serial_number" 
@@ -45,7 +54,10 @@ extern const babbler_cmd_t CMD_SERIAL_NUMBER = {
 
 extern const babbler_cmd_t CMD_DESCRIPTION = {
     "description",
-    &cmd_description, 
+    &cmd_description
+};
+extern const babbler_man_t MAN_DESCRIPTION = {
+    "description", 
     "get device description",
     "SYNOPSIS" 
     "    description" 
@@ -55,7 +67,10 @@ extern const babbler_cmd_t CMD_DESCRIPTION = {
 
 extern const babbler_cmd_t CMD_VERSION = {
     "version",
-    &cmd_version, 
+    &cmd_version
+};
+extern const babbler_man_t MAN_VERSION = {
+    "version",
     "get device version",
     "SYNOPSIS" 
     "    version" 
@@ -65,7 +80,10 @@ extern const babbler_cmd_t CMD_VERSION = {
 
 extern const babbler_cmd_t CMD_MANUFACTURER = {
     "manufacturer",
-    &cmd_manufacturer, 
+    &cmd_manufacturer
+};
+extern const babbler_man_t MAN_MANUFACTURER = {
+    "manufacturer",
     "get device manufacturer",
     "SYNOPSIS" 
     "    manufacturer" 
@@ -75,7 +93,10 @@ extern const babbler_cmd_t CMD_MANUFACTURER = {
 
 extern const babbler_cmd_t CMD_URI = {
     "uri",
-    &cmd_uri, 
+    &cmd_uri
+};
+extern const babbler_man_t MAN_URI = {
+    "uri",
     "get device uri",
     "SYNOPSIS" 
     "    uri" 

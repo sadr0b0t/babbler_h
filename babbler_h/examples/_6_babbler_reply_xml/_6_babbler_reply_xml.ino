@@ -31,10 +31,16 @@ babbler_cmd_t CMD_LEDON = {
     "ledon",
     /* указатель на функцию с реализацией команды */ 
     /* pointer to function with command implementation*/ 
-    &cmd_ledon,
+    &cmd_ledon
+};
+
+babbler_man_t MAN_LEDON = {
+    /* имя команды */ 
+    /* command name */
+    "ledon",
     /* краткое описание */ 
     /* short description */
-    "Turn led ON",
+    "turn led ON",
     /* руководство */ 
     /* manual */
     "SYNOPSIS\n"
@@ -49,7 +55,13 @@ babbler_cmd_t CMD_LEDOFF = {
     "ledoff",
     /* указатель на функцию с реализацией команды */ 
     /* pointer to function with command implementation*/ 
-    &cmd_ledoff,
+    &cmd_ledoff
+};
+
+babbler_man_t MAN_LEDOFF = {
+    /* имя команды */ 
+    /* command name */
+    "ledoff",
     /* краткое описание */ 
     /* short description */
     "turn led OFF",
@@ -78,6 +90,25 @@ extern const babbler_cmd_t BABBLER_COMMANDS[] = {
 /** Количество зарегистрированных команд */
 /** Number of registered commands*/
 extern const int BABBLER_COMMANDS_COUNT = sizeof(BABBLER_COMMANDS)/sizeof(babbler_cmd_t);
+
+
+/** Руководства для зарегистрированных команд */
+/** Manuals for registered commands */
+extern const babbler_man_t BABBLER_MANUALS[] = {
+    // команды из babbler_cmd_core.h
+    // commands from babbler_cmd.core.h
+    MAN_HELP,
+    MAN_PING,
+    
+    // пользовательские команды
+    // custom commands
+    MAN_LEDON,
+    MAN_LEDOFF
+};
+
+/** Количество руководств для зарегистрированных команд */
+/** Number of manuals for registered commands */
+extern const int BABBLER_MANUALS_COUNT = sizeof(BABBLER_MANUALS)/sizeof(babbler_man_t);
 
 /**
  * Обработать входные данные: разобрать строку, выполнить одну или 

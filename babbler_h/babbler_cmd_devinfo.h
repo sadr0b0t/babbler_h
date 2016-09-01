@@ -9,18 +9,25 @@
 // Команды
 /** Получить собственное имя устройства */
 extern const babbler_cmd_t CMD_NAME;
+extern const babbler_man_t MAN_NAME;
 /** Получить модель устройства */
 extern const babbler_cmd_t CMD_MODEL;
+extern const babbler_man_t MAN_MODEL;
 /** Получить серийный номер устройства */
 extern const babbler_cmd_t CMD_SERIAL_NUMBER;
+extern const babbler_man_t MAN_SERIAL_NUMBER;
 /** Получить словесное описание устройства */
 extern const babbler_cmd_t CMD_DESCRIPTION;
+extern const babbler_man_t MAN_DESCRIPTION;
 /** Получить версию прошивки устройства */
 extern const babbler_cmd_t CMD_VERSION;
+extern const babbler_man_t MAN_VERSION;
 /** Получить производителя устройства */
 extern const babbler_cmd_t CMD_MANUFACTURER;
+extern const babbler_man_t MAN_MANUFACTURER;
 /** Получить ссылку на страницу устройства */
 extern const babbler_cmd_t CMD_URI;
+extern const babbler_man_t MAN_URI;
 
 
 /**************************************/

@@ -10,8 +10,10 @@
 
 /** Вывести список команд */
 extern const babbler_cmd_t CMD_HELP;
+extern const babbler_man_t MAN_HELP;
 /** Проверить доступность устройства */
 extern const babbler_cmd_t CMD_PING;
+extern const babbler_man_t MAN_PING;
 
 /**************************************/
 // Обработчики команд
