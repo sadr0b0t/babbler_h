@@ -8,7 +8,7 @@ extern const babbler_cmd_t BABBLER_COMMANDS[] = {
     // команды из babbler_cmd_core.h
     // commands from babbler_cmd.core.h
     CMD_HELP,
-    CMD_PING,
+    CMD_PING
 };
 
 /** Количество зарегистрированных команд */
@@ -22,7 +22,7 @@ extern const babbler_man_t BABBLER_MANUALS[] = {
     // команды из babbler_cmd_core.h
     // commands from babbler_cmd.core.h
     MAN_HELP,
-    MAN_PING,
+    MAN_PING
 };
 
 /** Количество руководств для зарегистрированных команд */
