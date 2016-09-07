@@ -1,6 +1,8 @@
 
 #include "babbler_config.h"
+#include "babbler_protocol.h"
 
+#include "stddef.h"
 #include "stdio.h"
 #include "string.h"
 
@@ -35,12 +37,63 @@ int wrap_reply_newline(char* cmd, char* reply_buffer) {
  * @param длина новой строки
  */
 int wrap_reply_json(char* cmd, char* reply_buffer) {
+    return wrap_reply_with_id_json(cmd, NULL, reply_buffer);
+}
+
+/**
+ * Обернуть ответ в формат JSON вида:
+ * {"cmd": "cmd_name", "id": "cmd_id", "reply": "reply_value"}
+ * 
+ * здесь значение 
+ *     cmd_name - имя команды
+ *     cmd_id - клиентский идентификатор команды (пришел с командой)
+ *     reply_value - ответ выполненной команды (исходное содержимое reply_buffer)
+ *
+ * Новое значение перезаписывается в reply_buffer, его размера должно достаточно,
+ * чтобы вместить новую строку.
+ *
+ * @param cmd имя команды
+ * @param cmd_id клиентский идентификатор команды: приходит вместе с командой,
+ *     отправляется обратно в неизменном виде (если NULL, поле не записывается)
+ * @param reply_buffer исходное значение ответа выполненной команды,
+ *     перезаписывает новым значение строки с обернутым ответом
+ * @param длина новой строки
+ */
+int wrap_reply_with_id_json(char* cmd, char* cmd_id, char* reply_buffer) {
     // TODO: чтобы поэкономить память, можно не создавать новый временный буфер,
     // а сдвинуть содержимое старого reply_buffer на нужно количество символов вправо
     // и добавить нужные данные слева и справа
     char cmd_reply_buffer[CMD_WRITE_BUFFER_SIZE];
     
-    sprintf(cmd_reply_buffer, "{\"cmd\": \"%s\", \"reply\": \"%s\"}", cmd, reply_buffer);
+    if(cmd_id != NULL) {
+        if(strlen(reply_buffer) > 0 && reply_buffer[0] == '{') {
+            // ответ начинается с открывающейся фигурной скобки { - 
+            // будем считать, что там объект JSON и не будем брать его
+            // в кавычки
+            sprintf(cmd_reply_buffer, 
+                "{\"cmd\": \"%s\", \"id\": \"%s\", \"reply\": \"%s\"}", 
+                cmd, cmd_id, reply_buffer);
+        } else {
+            sprintf(cmd_reply_buffer, 
+                "{\"cmd\": \"%s\", \"id\": \"%s\", \"reply\": %s}", 
+                cmd, cmd_id, reply_buffer);
+        }
+    } else {
+        // нет cmd_id - нет поля
+        if(strlen(reply_buffer) > 0 && reply_buffer[0] == '{') {
+            // ответ начинается с открывающейся фигурной скобки { - 
+            // будем считать, что там объект JSON и не будем брать его
+            // в кавычки
+            sprintf(cmd_reply_buffer, 
+                "{\"cmd\": \"%s\", \"reply\": \"%s\"}", 
+                cmd, reply_buffer);
+        } else {
+            sprintf(cmd_reply_buffer, 
+                "{\"cmd\": \"%s\", \"reply\": %s}", 
+                cmd, reply_buffer);
+        }
+    }
+        
     strcpy(reply_buffer, cmd_reply_buffer);
     return strlen(reply_buffer);
 }
@@ -61,12 +114,43 @@ int wrap_reply_json(char* cmd, char* reply_buffer) {
  * @param длина новой строки
  */
 int wrap_reply_xml(char* cmd, char* reply_buffer) {
+    return wrap_reply_with_id_xml(cmd, NULL, reply_buffer);
+}
+
+/**
+ * Обернуть ответ в формат XML вида:
+ * <cmd_reply><cmd>cmd_name</cmd><id>cmd_id</id><reply>reply_value</reply></cmd_reply>
+ * 
+ * здесь значение cmd_name
+ *     cmd_name - имя команды
+ *     cmd_id - клиентский идентификатор команды (пришел с командой)
+ *     reply_value - ответ выполненной команды (исходное содержимое reply_buffer)
+ *
+ * Новое значение перезаписывается в reply_buffer, его размера должно достаточно,
+ * чтобы вместить новую строку.
+ *
+ * @param cmd имя команды
+ * @param cmd_id клиентский идентификатор команды: приходит вместе с командой,
+ *     отправляется обратно в неизменном виде (если NULL, поле не записывается)
+ * @param reply_buffer исходное значение ответа выполненной команды,
+ *     перезаписывает новым значение строки с обернутым ответом
+ * @param длина новой строки
+ */
+int wrap_reply_with_id_xml(char* cmd, char* cmd_id, char* reply_buffer) {
     // TODO: чтобы поэкономить память, можно не создавать новый временный буфер,
     // а сдвинуть содержимое старого reply_buffer на нужно количество символов вправо
     // и добавить нужные данные слева и справа
     char cmd_reply_buffer[CMD_WRITE_BUFFER_SIZE];
    
-    sprintf(cmd_reply_buffer, "<cmd_reply><cmd>%s</cmd><reply>%s</reply></cmd_reply>", cmd, reply_buffer);
+    if(cmd_id != NULL) {
+        sprintf(cmd_reply_buffer, 
+            "<cmd_reply><cmd>%s</cmd><id>%s</id><reply>%s</reply></cmd_reply>", 
+            cmd, cmd_id, reply_buffer);
+    } else {
+        sprintf(cmd_reply_buffer, 
+            "<cmd_reply><cmd>%s</cmd><reply>%s</reply></cmd_reply>", 
+            cmd, reply_buffer);
+    }
     strcpy(reply_buffer, cmd_reply_buffer);
     return strlen(reply_buffer);
 }
@@ -102,7 +186,7 @@ int wrap_reply_xml(char* cmd, char* reply_buffer) {
  */
 int handle_input_multicmd(char* buffer, int buffer_size, char* reply_buffer, 
         int (*_handle_command)(char* buffer, char* reply_buffer, int (*_wrap_reply)(char* cmd, char* reply_buffer)), 
-        int (*_wrap_reply)(char* cmd, char* reply_buffer)=NULL, const char* separator=";") {
+        int (*_wrap_reply)(char* cmd, char* reply_buffer), const char* separator) {
     // добавим к входным данным завершающий ноль, 
     // чтобы рассматривать их как корректную строку
     buffer[buffer_size] = 0;
