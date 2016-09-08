@@ -172,7 +172,11 @@ int handle_command_json(char* buffer, char* reply_buffer,
             // TODO: здесь следует или экранировать входную строку
             // так, чтобы она не поломала отправляемый обратно JSON,
             // или отправлять поле cmd пустым
-            _wrap_reply(buffer, cmd_id, reply_buffer);
+            // возможные решения для экранирования 
+            // http://stackoverflow.com/questions/7724448/simple-json-string-escape-for-c
+            // пока просто оставляем пустым
+            //_wrap_reply(buffer, cmd_id, reply_buffer);
+            _wrap_reply("", cmd_id, reply_buffer);
         }
     }
     
