@@ -144,7 +144,7 @@ int handle_input(char* buffer, int buffer_size, char* reply_buffer) {
 
 void setup() {
     Serial.begin(9600);
-    Serial.println("Starting babbler-powered device with JSON input,"
+    Serial.println("Starting babbler-powered device with JSON i/o,"
         " type {\"cmd\": \"help\", \"id\": \"34\", \"params\":[]} for list of commands");
     
     //babbler_serial_setup(handle_input, 9600);
