@@ -75,7 +75,7 @@ int cmd_help(char* reply_buffer, int argc, char *argv[]) {
                     sprintf(reply_buffer+strlen(reply_buffer), 
                         "NAME\n"
                         "    %s - %s\n"
-                        "%s\n",
+                        "%s",
                         BABBLER_MANUALS[i].name, BABBLER_MANUALS[i].short_descr, 
                         BABBLER_MANUALS[i].manual);
                 }
@@ -86,7 +86,7 @@ int cmd_help(char* reply_buffer, int argc, char *argv[]) {
         
         if(!cmd_found) {
             // команда не найдена
-            sprintf(reply_buffer+strlen(reply_buffer), "help: COMMAND NOT FOUND: %s\n", argv[1]);
+            sprintf(reply_buffer+strlen(reply_buffer), "help: COMMAND NOT FOUND: %s", argv[1]);
         }
     }
         
