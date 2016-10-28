@@ -4,8 +4,21 @@
 
 ```c++
 #include "babbler.h"
+#include "babbler_simple.h"
 #include "babbler_cmd_core.h"
 #include "babbler_serial.h"
+
+// Размеры буферов для чтения команд и записи ответов
+// Read and write buffer size for communication modules
+#define SERIAL_READ_BUFFER_SIZE 128
+#define SERIAL_WRITE_BUFFER_SIZE 512
+
+// Буферы для обмена данными с компьютером через последовательный порт.
+// +1 байт в конце для завершающего нуля
+// Data exchange buffers to communicate with computer via serial port.
+// +1 extra byte at the end for terminating zero
+char serial_read_buffer[SERIAL_READ_BUFFER_SIZE+1];
+char serial_write_buffer[SERIAL_WRITE_BUFFER_SIZE];
 
 /** Зарегистрированные команды */
 /** Registered commands */
@@ -13,41 +26,41 @@ extern const babbler_cmd_t BABBLER_COMMANDS[] = {
     // команды из babbler_cmd_core.h
     // commands from babbler_cmd.core.h
     CMD_HELP,
-    CMD_PING,
+    CMD_PING
 };
 
 /** Количество зарегистрированных команд */
 /** Number of registered commands*/
 extern const int BABBLER_COMMANDS_COUNT = sizeof(BABBLER_COMMANDS)/sizeof(babbler_cmd_t);
 
-/**
- * Обработать входные данные: разобрать строку, выполнить одну или 
- * несколько команд, записать ответ
- *
- * @param buffer - входные данные, строка
- * @param buffer_size - размер входных данных
- * @param reply_buffer - ответ, строка, оканчивающаяся нулём
- * @return размер ответа в байтах (0, чтобы не отправлять ответ)
- */
- /**
- * Handle input data: parse string, run one or multiple commands, 
- * write reply.
- *
- * @param buffer - input data, zero-terminated string
- * @param buffer_size - number of input bytes
- * @param reply_buffer - reply, zero-terminated string
- * @return size of reply in bytes (0 for no reply)
- */
-int handle_input(char* buffer, int buffer_size, char* reply_buffer) {
-    return handle_command(buffer, reply_buffer);
-}
+
+/** Руководства для зарегистрированных команд */
+/** Manuals for registered commands */
+extern const babbler_man_t BABBLER_MANUALS[] = {
+    // команды из babbler_cmd_core.h
+    // commands from babbler_cmd.core.h
+    MAN_HELP,
+    MAN_PING
+};
+
+/** Количество руководств для зарегистрированных команд */
+/** Number of manuals for registered commands */
+extern const int BABBLER_MANUALS_COUNT = sizeof(BABBLER_MANUALS)/sizeof(babbler_man_t);
 
 void setup() {
     Serial.begin(9600);
     Serial.println("Starting babbler-powered device, type help for list of commands");
     
-    //babbler_serial_setup(handle_input, 9600);
-    babbler_serial_setup(handle_input, BABBLER_SERIAL_SKIP_PORT_INIT);
+    babbler_serial_set_packet_filter(packet_filter_newline);
+    babbler_serial_set_input_handler(handle_input_simple);
+    //babbler_serial_setup(
+    //    serial_read_buffer, SERIAL_READ_BUFFER_SIZE,
+    //    serial_write_buffer, SERIAL_WRITE_BUFFER_SIZE,
+    //    9600);
+    babbler_serial_setup(
+        serial_read_buffer, SERIAL_READ_BUFFER_SIZE,
+        serial_write_buffer, SERIAL_WRITE_BUFFER_SIZE,
+        BABBLER_SERIAL_SKIP_PORT_INIT);
 }
 
 void loop() {
@@ -58,19 +71,32 @@ void loop() {
 
 ```
 
-пример поинтереснее - добавление собственных команд с оборачиванием результата в JSON
+пример поинтереснее - добавление собственных команд
 
 ```c++
 #include "babbler.h"
+#include "babbler_simple.h"
 #include "babbler_cmd_core.h"
-#include "babbler_protocol.h"
 #include "babbler_serial.h"
+
+// Размеры буферов для чтения команд и записи ответов
+// Read and write buffer size for communication modules
+#define SERIAL_READ_BUFFER_SIZE 128
+#define SERIAL_WRITE_BUFFER_SIZE 512
+
+// Буферы для обмена данными с компьютером через последовательный порт.
+// +1 байт в конце для завершающего нуля
+// Data exchange buffers to communicate with computer via serial port.
+// +1 extra byte at the end for terminating zero
+char serial_read_buffer[SERIAL_READ_BUFFER_SIZE+1];
+char serial_write_buffer[SERIAL_WRITE_BUFFER_SIZE];
+
 
 #define LED_PIN 13
 
 /** Реализация команды ledon (включить лампочку) */
 /** ledon (turn led ON) command implementation */
-int cmd_ledon(char* reply_buffer, int argc=0, char *argv[]=NULL) {
+int cmd_ledon(char* reply_buffer, int reply_buf_size, int argc=0, char *argv[]=NULL) {
     digitalWrite(LED_PIN, HIGH);
     
     // команда выполнена
@@ -80,7 +106,7 @@ int cmd_ledon(char* reply_buffer, int argc=0, char *argv[]=NULL) {
 
 /** Реализация команды ledoff (включить лампочку) */
 /** ledoff (turn led OFF) command implementation */
-int cmd_ledoff(char* reply_buffer, int argc=0, char *argv[]=NULL) {
+int cmd_ledoff(char* reply_buffer, int reply_buf_size, int argc=0, char *argv[]=NULL) {
     digitalWrite(LED_PIN, LOW);
     
     // команда выполнена
@@ -94,10 +120,16 @@ babbler_cmd_t CMD_LEDON = {
     "ledon",
     /* указатель на функцию с реализацией команды */ 
     /* pointer to function with command implementation*/ 
-    &cmd_ledon,
+    &cmd_ledon
+};
+
+babbler_man_t MAN_LEDON = {
+    /* имя команды */ 
+    /* command name */
+    "ledon",
     /* краткое описание */ 
     /* short description */
-    "Turn led ON",
+    "turn led ON",
     /* руководство */ 
     /* manual */
     "SYNOPSIS\n"
@@ -112,7 +144,13 @@ babbler_cmd_t CMD_LEDOFF = {
     "ledoff",
     /* указатель на функцию с реализацией команды */ 
     /* pointer to function with command implementation*/ 
-    &cmd_ledoff,
+    &cmd_ledoff
+};
+
+babbler_man_t MAN_LEDOFF = {
+    /* имя команды */ 
+    /* command name */
+    "ledoff",
     /* краткое описание */ 
     /* short description */
     "turn led OFF",
@@ -142,38 +180,42 @@ extern const babbler_cmd_t BABBLER_COMMANDS[] = {
 /** Number of registered commands*/
 extern const int BABBLER_COMMANDS_COUNT = sizeof(BABBLER_COMMANDS)/sizeof(babbler_cmd_t);
 
-/**
- * Обработать входные данные: разобрать строку, выполнить одну или 
- * несколько команд, записать ответ
- *
- * @param buffer - входные данные, строка
- * @param buffer_size - размер входных данных
- * @param reply_buffer - ответ, строка, оканчивающаяся нулём
- * @return размер ответа в байтах (0, чтобы не отправлять ответ)
- */
- /**
- * Handle input data: parse string, run one or multiple commands, 
- * write reply.
- *
- * @param buffer - input data, zero-terminated string
- * @param buffer_size - number of input bytes
- * @param reply_buffer - reply, zero-terminated string
- * @return size of reply in bytes (0 for no reply)
- */
-int handle_input(char* buffer, int buffer_size, char* reply_buffer) {
-    //return handle_command(buffer, reply_buffer);
-    return handle_command(buffer, reply_buffer, &wrap_reply_json);
-    //return handle_command(buffer, reply_buffer, &wrap_reply_xml);
-}
+
+/** Руководства для зарегистрированных команд */
+/** Manuals for registered commands */
+extern const babbler_man_t BABBLER_MANUALS[] = {
+    // команды из babbler_cmd_core.h
+    // commands from babbler_cmd.core.h
+    MAN_HELP,
+    MAN_PING,
+    
+    // пользовательские команды
+    // custom commands
+    MAN_LEDON,
+    MAN_LEDOFF
+};
+
+/** Количество руководств для зарегистрированных команд */
+/** Number of manuals for registered commands */
+extern const int BABBLER_MANUALS_COUNT = sizeof(BABBLER_MANUALS)/sizeof(babbler_man_t);
 
 void setup() {
     Serial.begin(9600);
     Serial.println("Starting babbler-powered device, type help for list of commands");
     
-    https://github.com/1i7/babbler_h
-    
-    //babbler_serial_setup(handle_input, 9600);
-    babbler_serial_setup(handle_input, BABBLER_SERIAL_SKIP_PORT_INIT);
+    babbler_serial_set_packet_filter(packet_filter_newline);
+    babbler_serial_set_input_handler(handle_input_simple);
+    //babbler_serial_setup(
+    //    serial_read_buffer, SERIAL_READ_BUFFER_SIZE,
+    //    serial_write_buffer, SERIAL_WRITE_BUFFER_SIZE,
+    //    9600);
+    babbler_serial_setup(
+        serial_read_buffer, SERIAL_READ_BUFFER_SIZE,
+        serial_write_buffer, SERIAL_WRITE_BUFFER_SIZE,
+        BABBLER_SERIAL_SKIP_PORT_INIT);
+        
+        
+    pinMode(LED_PIN, OUTPUT);
 }
 
 void loop() {
@@ -188,13 +230,26 @@ void loop() {
 
 ```c++
 #include "babbler.h"
+#include "babbler_simple.h"
 #include "babbler_cmd_core.h"
 #include "babbler_serial.h"
+
+// Размеры буферов для чтения команд и записи ответов
+// Read and write buffer size for communication modules
+#define SERIAL_READ_BUFFER_SIZE 128
+#define SERIAL_WRITE_BUFFER_SIZE 512
+
+// Буферы для обмена данными с компьютером через последовательный порт.
+// +1 байт в конце для завершающего нуля
+// Data exchange buffers to communicate with computer via serial port.
+// +1 extra byte at the end for terminating zero
+char serial_read_buffer[SERIAL_READ_BUFFER_SIZE+1];
+char serial_write_buffer[SERIAL_WRITE_BUFFER_SIZE];
 
 
 /** Реализация команды pin_mode (установить режим пина: INPUT/OUTPUT) */
 /** pin_mode (set pin mode: INPUT/OUTPUT) command implementation */
-int cmd_pin_mode(char* reply_buffer, int argc, char *argv[]) {
+int cmd_pin_mode(char* reply_buffer, int reply_buf_size, int argc, char *argv[]) {
     bool paramsOk = true;
     bool success = false;
     
@@ -259,7 +314,7 @@ int cmd_pin_mode(char* reply_buffer, int argc, char *argv[]) {
 
 /** Реализация команды digital_write (записать значение HIGH/LOW в порт) */
 /** digital_write (write value HIGH/LOW to port) command implementation */
-int cmd_digital_write(char* reply_buffer, int argc, char *argv[]) {
+int cmd_digital_write(char* reply_buffer, int reply_buf_size, int argc, char *argv[]) {
     bool paramsOk = true;
     bool success = false;
     
@@ -328,7 +383,13 @@ babbler_cmd_t CMD_PIN_MODE = {
     "pin_mode",
     /* указатель на функцию с реализацией команды */ 
     /* pointer to function with command implementation*/ 
-    &cmd_pin_mode,
+    &cmd_pin_mode
+};
+
+babbler_man_t MAN_PIN_MODE = {
+    /* имя команды */ 
+    /* command name */
+    "pin_mode",
     /* краткое описание */ 
     /* short description */
     "set pin mode: INPUT/OUTPUT",
@@ -349,7 +410,13 @@ babbler_cmd_t CMD_DIGITAL_WRITE = {
     "digital_write",
     /* указатель на функцию с реализацией команды */ 
     /* pointer to function with command implementation*/ 
-    &cmd_digital_write,
+    &cmd_digital_write
+};
+
+babbler_man_t MAN_DIGITAL_WRITE = {
+    /* имя команды */ 
+    /* command name */
+    "digital_write",
     /* краткое описание */ 
     /* short description */
     "write digital value HIGH/LOW (1/0) to output port", 
@@ -382,34 +449,39 @@ extern const babbler_cmd_t BABBLER_COMMANDS[] = {
 /** Number of registered commands*/
 extern const int BABBLER_COMMANDS_COUNT = sizeof(BABBLER_COMMANDS)/sizeof(babbler_cmd_t);
 
-/**
- * Обработать входные данные: разобрать строку, выполнить одну или 
- * несколько команд, записать ответ
- *
- * @param buffer - входные данные, строка
- * @param buffer_size - размер входных данных
- * @param reply_buffer - ответ, строка, оканчивающаяся нулём
- * @return размер ответа в байтах (0, чтобы не отправлять ответ)
- */
- /**
- * Handle input data: parse string, run one or multiple commands, 
- * write reply.
- *
- * @param buffer - input data, zero-terminated string
- * @param buffer_size - number of input bytes
- * @param reply_buffer - reply, zero-terminated string
- * @return size of reply in bytes (0 for no reply)
- */
-int handle_input(char* buffer, int buffer_size, char* reply_buffer) {
-    return handle_command(buffer, reply_buffer);
-}
+/** Руководства для зарегистрированных команд */
+/** Manuals for registered commands */
+extern const babbler_man_t BABBLER_MANUALS[] = {
+    // команды из babbler_cmd_core.h
+    // commands from babbler_cmd.core.h
+    MAN_HELP,
+    MAN_PING,
+    
+    // пользовательские команды
+    // custom commands
+    MAN_PIN_MODE,
+    MAN_DIGITAL_WRITE
+};
+
+/** Количество руководств для зарегистрированных команд */
+/** Number of manuals for registered commands */
+extern const int BABBLER_MANUALS_COUNT = sizeof(BABBLER_MANUALS)/sizeof(babbler_man_t);
+
 
 void setup() {
     Serial.begin(9600);
     Serial.println("Starting babbler-powered device, type help for list of commands");
     
-    //babbler_serial_setup(handle_input, 9600);
-    babbler_serial_setup(handle_input, BABBLER_SERIAL_SKIP_PORT_INIT);
+    babbler_serial_set_packet_filter(packet_filter_newline);
+    babbler_serial_set_input_handler(handle_input_simple);
+    //babbler_serial_setup(
+    //    serial_read_buffer, SERIAL_READ_BUFFER_SIZE,
+    //    serial_write_buffer, SERIAL_WRITE_BUFFER_SIZE,
+    //    9600);
+    babbler_serial_setup(
+        serial_read_buffer, SERIAL_READ_BUFFER_SIZE,
+        serial_write_buffer, SERIAL_WRITE_BUFFER_SIZE,
+        BABBLER_SERIAL_SKIP_PORT_INIT);
 }
 
 void loop() {
@@ -417,5 +489,6 @@ void loop() {
     // monitor serial port for input data
     babbler_serial_tasks();
 }
+
 ```
 
