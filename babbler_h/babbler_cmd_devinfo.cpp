@@ -107,7 +107,7 @@ extern const babbler_man_t MAN_URI = {
 /** 
  * Получить собственное имя устройства.
  */
-int cmd_name(char* reply_buffer, int argc, char *argv[]) {
+int cmd_name(char* reply_buffer, int reply_buf_size, int argc, char *argv[]) {
     strcpy(reply_buffer, DEVICE_NAME);
     return strlen(reply_buffer);
 }
@@ -115,7 +115,7 @@ int cmd_name(char* reply_buffer, int argc, char *argv[]) {
 /** 
  * Получить модель устройства.
  */
-int cmd_model(char* reply_buffer, int argc, char *argv[]) {
+int cmd_model(char* reply_buffer, int reply_buf_size, int argc, char *argv[]) {
     strcpy(reply_buffer, DEVICE_MODEL);
     return strlen(reply_buffer);
 }
@@ -123,7 +123,7 @@ int cmd_model(char* reply_buffer, int argc, char *argv[]) {
 /** 
  * Получить серийный номер устройства.
  */
-int cmd_serial_number(char* reply_buffer, int argc, char *argv[]) {
+int cmd_serial_number(char* reply_buffer, int reply_buf_size, int argc, char *argv[]) {
     strcpy(reply_buffer, DEVICE_SERIAL_NUMBER);
     return strlen(reply_buffer);
 }
@@ -131,7 +131,7 @@ int cmd_serial_number(char* reply_buffer, int argc, char *argv[]) {
 /** 
  * Получить словесное описание устройства. 
  */
-int cmd_description(char* reply_buffer, int argc, char *argv[]) {
+int cmd_description(char* reply_buffer, int reply_buf_size, int argc, char *argv[]) {
     strcpy(reply_buffer, DEVICE_DESCRIPTION);
     return strlen(reply_buffer);
 }
@@ -139,7 +139,7 @@ int cmd_description(char* reply_buffer, int argc, char *argv[]) {
 /** 
  * Получить версию прошивки устройства.
  */
-int cmd_version(char* reply_buffer, int argc, char *argv[]) {
+int cmd_version(char* reply_buffer, int reply_buf_size, int argc, char *argv[]) {
     strcpy(reply_buffer, DEVICE_VERSION);
     return strlen(reply_buffer);
 }
@@ -147,7 +147,7 @@ int cmd_version(char* reply_buffer, int argc, char *argv[]) {
 /** 
  * Получить производителя устройства.
  */
-int cmd_manufacturer(char* reply_buffer, int argc, char *argv[]) {
+int cmd_manufacturer(char* reply_buffer, int reply_buf_size, int argc, char *argv[]) {
     strcpy(reply_buffer, DEVICE_MANUFACTURER);
     return strlen(reply_buffer);
 }
@@ -155,7 +155,7 @@ int cmd_manufacturer(char* reply_buffer, int argc, char *argv[]) {
 /** 
  * Получить ссылку на страницу устройства.
  */
-int cmd_uri(char* reply_buffer, int argc, char *argv[]) {
+int cmd_uri(char* reply_buffer, int reply_buf_size, int argc, char *argv[]) {
     strcpy(reply_buffer, DEVICE_URI);
     return strlen(reply_buffer);
 }

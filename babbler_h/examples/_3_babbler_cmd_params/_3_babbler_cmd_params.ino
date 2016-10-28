@@ -1,11 +1,24 @@
 #include "babbler.h"
+#include "babbler_simple.h"
 #include "babbler_cmd_core.h"
 #include "babbler_serial.h"
+
+// Размеры буферов для чтения команд и записи ответов
+// Read and write buffer size for communication modules
+#define SERIAL_READ_BUFFER_SIZE 128
+#define SERIAL_WRITE_BUFFER_SIZE 512
+
+// Буферы для обмена данными с компьютером через последовательный порт.
+// +1 байт в конце для завершающего нуля
+// Data exchange buffers to communicate with computer via serial port.
+// +1 extra byte at the end for terminating zero
+char serial_read_buffer[SERIAL_READ_BUFFER_SIZE+1];
+char serial_write_buffer[SERIAL_WRITE_BUFFER_SIZE];
 
 
 /** Реализация команды pin_mode (установить режим пина: INPUT/OUTPUT) */
 /** pin_mode (set pin mode: INPUT/OUTPUT) command implementation */
-int cmd_pin_mode(char* reply_buffer, int argc, char *argv[]) {
+int cmd_pin_mode(char* reply_buffer, int reply_buf_size, int argc, char *argv[]) {
     bool paramsOk = true;
     bool success = false;
     
@@ -70,7 +83,7 @@ int cmd_pin_mode(char* reply_buffer, int argc, char *argv[]) {
 
 /** Реализация команды digital_write (записать значение HIGH/LOW в порт) */
 /** digital_write (write value HIGH/LOW to port) command implementation */
-int cmd_digital_write(char* reply_buffer, int argc, char *argv[]) {
+int cmd_digital_write(char* reply_buffer, int reply_buf_size, int argc, char *argv[]) {
     bool paramsOk = true;
     bool success = false;
     
@@ -223,34 +236,21 @@ extern const babbler_man_t BABBLER_MANUALS[] = {
 /** Number of manuals for registered commands */
 extern const int BABBLER_MANUALS_COUNT = sizeof(BABBLER_MANUALS)/sizeof(babbler_man_t);
 
-/**
- * Обработать входные данные: разобрать строку, выполнить одну или 
- * несколько команд, записать ответ
- *
- * @param buffer - входные данные, строка
- * @param buffer_size - размер входных данных
- * @param reply_buffer - ответ, строка, оканчивающаяся нулём
- * @return размер ответа в байтах (0, чтобы не отправлять ответ)
- */
- /**
- * Handle input data: parse string, run one or multiple commands, 
- * write reply.
- *
- * @param buffer - input data, zero-terminated string
- * @param buffer_size - number of input bytes
- * @param reply_buffer - reply, zero-terminated string
- * @return size of reply in bytes (0 for no reply)
- */
-int handle_input(char* buffer, int buffer_size, char* reply_buffer) {
-    return handle_command(buffer, reply_buffer);
-}
 
 void setup() {
     Serial.begin(9600);
     Serial.println("Starting babbler-powered device, type help for list of commands");
     
-    //babbler_serial_setup(handle_input, 9600);
-    babbler_serial_setup(handle_input, BABBLER_SERIAL_SKIP_PORT_INIT);
+    babbler_serial_set_packet_filter(packet_filter_newline);
+    babbler_serial_set_input_handler(handle_input_simple);
+    //babbler_serial_setup(
+    //    serial_read_buffer, SERIAL_READ_BUFFER_SIZE,
+    //    serial_write_buffer, SERIAL_WRITE_BUFFER_SIZE,
+    //    9600);
+    babbler_serial_setup(
+        serial_read_buffer, SERIAL_READ_BUFFER_SIZE,
+        serial_write_buffer, SERIAL_WRITE_BUFFER_SIZE,
+        BABBLER_SERIAL_SKIP_PORT_INIT);
 }
 
 void loop() {

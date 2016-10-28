@@ -1,4 +1,5 @@
 #include "babbler.h"
+#include "babbler_simple.h"
 #include "babbler_cmd_core.h"
 
 // включить отладку через последовательный порт
@@ -11,6 +12,19 @@
 // для последовательного порта Serial
 #ifdef BABBLER_SERIAL
 #include "babbler_serial.h"
+
+// Размеры буферов для чтения команд и записи ответов
+// Read and write buffer size for communication modules
+#define SERIAL_READ_BUFFER_SIZE 128
+#define SERIAL_WRITE_BUFFER_SIZE 512
+
+// Буферы для обмена данными с компьютером через последовательный порт.
+// +1 байт в конце для завершающего нуля
+// Data exchange buffers to communicate with computer via serial port.
+// +1 extra byte at the end for terminating zero
+char serial_read_buffer[SERIAL_READ_BUFFER_SIZE+1];
+char serial_write_buffer[SERIAL_WRITE_BUFFER_SIZE];
+
 #endif // BABBLER_SERIAL
 
 
@@ -40,27 +54,6 @@ extern const babbler_man_t BABBLER_MANUALS[] = {
 /** Number of manuals for registered commands */
 extern const int BABBLER_MANUALS_COUNT = sizeof(BABBLER_MANUALS)/sizeof(babbler_man_t);
 
-/**
- * Обработать входные данные: разобрать строку, выполнить одну или 
- * несколько команд, записать ответ
- *
- * @param buffer - входные данные, строка
- * @param buffer_size - размер входных данных
- * @param reply_buffer - ответ, строка, оканчивающаяся нулём
- * @return размер ответа в байтах (0, чтобы не отправлять ответ)
- */
- /**
- * Handle input data: parse string, run one or multiple commands, 
- * write reply.
- *
- * @param buffer - input data, zero-terminated string
- * @param buffer_size - number of input bytes
- * @param reply_buffer - reply, zero-terminated string
- * @return size of reply in bytes (0 for no reply)
- */
-int handle_input(char* buffer, int buffer_size, char* reply_buffer) {
-    return handle_command(buffer, reply_buffer);
-}
 
 /**
  * Предварительная настройка модулей каналов связи, 
@@ -69,11 +62,20 @@ int handle_input(char* buffer, int buffer_size, char* reply_buffer) {
 void babbler_setup() {
     // Модули связи
     #ifdef BABBLER_SERIAL
+        babbler_serial_set_packet_filter(packet_filter_newline);
+        babbler_serial_set_input_handler(handle_input_simple);
+    
         #ifdef DEBUG_SERIAL
             Serial.println("Enable Babbler Serial communication module");
-            babbler_serial_setup(handle_input, BABBLER_SERIAL_SKIP_PORT_INIT);
+            babbler_serial_setup(
+                serial_read_buffer, SERIAL_READ_BUFFER_SIZE,
+                serial_write_buffer, SERIAL_WRITE_BUFFER_SIZE,
+                BABBLER_SERIAL_SKIP_PORT_INIT);
         #else
-            babbler_serial_setup(handle_input, 9600);
+            babbler_serial_setup(
+                serial_read_buffer, SERIAL_READ_BUFFER_SIZE,
+                serial_write_buffer, SERIAL_WRITE_BUFFER_SIZE,
+                9600);
         #endif // DEBUG_SERIAL
     #endif // BABBLER_SERIAL
 }

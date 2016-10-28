@@ -36,37 +36,37 @@ extern const babbler_man_t MAN_URI;
 /** 
  * Получить собственное имя устройства.
  */
-int cmd_name(char* reply_buffer, int argc=0, char *argv[]=NULL);
+int cmd_name(char* reply_buffer, int reply_buf_size, int argc=0, char *argv[]=NULL);
 
 /** 
  * Получить модель устройства.
  */
-int cmd_model(char* reply_buffer, int argc=0, char *argv[]=NULL);
+int cmd_model(char* reply_buffer, int reply_buf_size, int argc=0, char *argv[]=NULL);
 
 /** 
  * Получить серийный номер устройства.
  */
-int cmd_serial_number(char* reply_buffer, int argc=0, char *argv[]=NULL);
+int cmd_serial_number(char* reply_buffer, int reply_buf_size, int argc=0, char *argv[]=NULL);
 
 /** 
  * Получить словесное описание устройства. 
  */
-int cmd_description(char* reply_buffer, int argc=0, char *argv[]=NULL);
+int cmd_description(char* reply_buffer, int reply_buf_size, int argc=0, char *argv[]=NULL);
 
 /** 
  * Получить версию прошивки устройства.
  */
-int cmd_version(char* reply_buffer, int argc=0, char *argv[]=NULL);
+int cmd_version(char* reply_buffer, int reply_buf_size, int argc=0, char *argv[]=NULL);
 
 /** 
  * Получить производителя устройства.
  */
-int cmd_manufacturer(char* reply_buffer, int argc=0, char *argv[]=NULL);
+int cmd_manufacturer(char* reply_buffer, int reply_buf_size, int argc=0, char *argv[]=NULL);
 
 /** 
  * Получить ссылку на страницу устройства.
  */
-int cmd_uri(char* reply_buffer, int argc=0, char *argv[]=NULL);
+int cmd_uri(char* reply_buffer, int reply_buf_size, int argc=0, char *argv[]=NULL);
 
 #endif // BABBLER_CMD_DEVINFO_H
 

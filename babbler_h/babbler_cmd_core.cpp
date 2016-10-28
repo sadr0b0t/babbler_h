@@ -44,9 +44,9 @@ extern const babbler_man_t MAN_PING = {
 /** 
  * Вывести список команд.
  */
-int cmd_help(char* reply_buffer, int argc, char *argv[]) {
+int cmd_help(char* reply_buffer, int reply_buf_size, int argc, char *argv[]) {
     if(argc <= 1) {
-        // парамаетры не заданы или задан только 1й параметр (имя команды) - 
+        // параметры не заданы или задан только 1й параметр (имя команды) - 
         // выводим список команд с кратким описанием
         sprintf(reply_buffer, "Commands: \n");
         for(int i=0; i < BABBLER_MANUALS_COUNT; i++) {
@@ -97,7 +97,7 @@ int cmd_help(char* reply_buffer, int argc, char *argv[]) {
 /** 
  * Проверить доступность устройства - вернуть 'ok'.
  */
-int cmd_ping(char* reply_buffer, int argc, char *argv[]) {
+int cmd_ping(char* reply_buffer, int reply_buf_size, int argc, char *argv[]) {
     // команда выполнена
     strcpy(reply_buffer, REPLY_OK);
     return strlen(reply_buffer);

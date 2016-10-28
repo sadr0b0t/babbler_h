@@ -1,7 +1,7 @@
 #include "babbler.h"
 #include "babbler_simple.h"
+#include "babbler_json.h"
 #include "babbler_cmd_core.h"
-#include "babbler_cmd_devinfo.h"
 #include "babbler_serial.h"
 
 // Размеры буферов для чтения команд и записи ответов
@@ -15,15 +15,6 @@
 // +1 extra byte at the end for terminating zero
 char serial_read_buffer[SERIAL_READ_BUFFER_SIZE+1];
 char serial_write_buffer[SERIAL_WRITE_BUFFER_SIZE];
-
-
-extern const char* DEVICE_NAME = "Babbler demo";
-extern const char* DEVICE_MODEL = "prototype1";
-extern const char* DEVICE_SERIAL_NUBMER = "00000003";
-extern const char* DEVICE_DESCRIPTION = "Communicative Arduino-based device powered by Babbler communication library";
-extern const char* DEVICE_VERSION = "0.1-devel";
-extern const char* DEVICE_MANUFACTURER = "Sad robot";
-extern const char* DEVICE_URI = "sadrobot.su";
 
 #define LED_PIN 13
 
@@ -103,15 +94,6 @@ extern const babbler_cmd_t BABBLER_COMMANDS[] = {
     CMD_HELP,
     CMD_PING,
     
-    // команды из babbler_cmd_devinfo.h
-    // commands from babbler_cmd.devinfo.h
-    CMD_NAME,
-    CMD_MODEL,
-    CMD_DESCRIPTION,
-    CMD_VERSION,
-    CMD_MANUFACTURER,
-    CMD_URI,
-    
     // пользовательские команды
     // custom commands
     CMD_LEDON,
@@ -122,6 +104,7 @@ extern const babbler_cmd_t BABBLER_COMMANDS[] = {
 /** Number of registered commands*/
 extern const int BABBLER_COMMANDS_COUNT = sizeof(BABBLER_COMMANDS)/sizeof(babbler_cmd_t);
 
+
 /** Руководства для зарегистрированных команд */
 /** Manuals for registered commands */
 extern const babbler_man_t BABBLER_MANUALS[] = {
@@ -129,15 +112,6 @@ extern const babbler_man_t BABBLER_MANUALS[] = {
     // commands from babbler_cmd.core.h
     MAN_HELP,
     MAN_PING,
-    
-    // команды из babbler_cmd_devinfo.h
-    // commands from babbler_cmd.devinfo.h
-    MAN_NAME,
-    MAN_MODEL,
-    MAN_DESCRIPTION,
-    MAN_VERSION,
-    MAN_MANUFACTURER,
-    MAN_URI,
     
     // пользовательские команды
     // custom commands
@@ -150,12 +124,69 @@ extern const babbler_man_t BABBLER_MANUALS[] = {
 extern const int BABBLER_MANUALS_COUNT = sizeof(BABBLER_MANUALS)/sizeof(babbler_man_t);
 
 
+/**
+ * Обработать входные данные: разобрать строку, выполнить одну или 
+ * несколько команд, записать ответ.
+ * @param input_buffer - входные данные, массив байт (строка или двоичный)
+ * @param input_len - размер входных данных
+ * @param reply_buffer - буфер для записи ответа, массив байт (строка или двоичный)
+ * @param reply_buf_size - размер буфера reply_buffer - максимальная длина ответа.
+ *     Реализация функции должна следить за тем, чтобы длина ответа не превышала
+ *     максимальный размер буфера
+ * @return длина ответа в байтах или код ошибки
+ *     >0, <=reply_buf_size: количество байт, записанных в reply_buffer
+ *     0: не отправлять ответ
+ *    -1: ошибка при формировании ответа (не хватило места в буфере)
+ */
+/**
+ * Handle input data: parse string, run one or multiple commands, 
+ * write reply.
+ * @param input_buffer - input data, byte array (string or binary)
+ * @param input_len - input data length
+ * @param reply_buffer - reply buffer, byte array (string or binary)
+ * @param reply_buf_size - size of reply_buffer buffer - maximum length of reply.
+ *     Function implementation should take care of reply length not exceeding
+ *     maximum reply buffer size.
+ * @return length of reply in bytes or error code
+ *     >0, <=reply_buf_size: number of bytes, written to reply_buffer
+ *     0: don't send reply
+ *    -1: error while constructing reply (not enought space in reply_buffer)
+ */
+int handle_input(char* input_buffer, int input_len, char* reply_buffer, int reply_buf_size) {
+    // "распакуем" пакет: добавим завершающий ноль, срежем перевод строки (если есть)
+    // (места в буфере для дополнительного нуля точно хватит, т.к. даже если длина входных данных
+    // input_len равна размеру буфера SERIAL_READ_BUFFER_SIZE, у нас все равно в буфере есть 
+    // один лишний байт)
+    // "unpack" package: add terminating zero, cut newline at the end (if present)
+    // (we have enough space for terminating zero in buffer, because even if input data length
+    // input_len is equal to input buffer size SERIAL_READ_BUFFER_SIZE, we still have
+    // one extra byte in the buffer)
+    unpack_input_as_str(input_buffer, input_len, true);
+    
+    // выполняем команду (reply_buf_size-2 - место для переноса строки и завершающего нуля)
+    // execute command (reply_buf_size-2 - place for newline and terminating zero)
+    int reply_len = handle_command_simple(input_buffer, reply_buffer, reply_buf_size-2, wrap_reply_json);
+    
+    // проверить на ошибку
+    // check for error
+    if(reply_len < 0) {
+        reply_len = write_reply_error(reply_buffer, reply_len, reply_buf_size-2);
+    }
+    
+    // "упаковать" пакет для отправки - добавить перенос строки
+    // "pack" reply to send - add newline at the end
+    reply_len = pack_reply_newline(reply_buffer, reply_len, reply_buf_size);
+    
+    return reply_len;
+}
+
+
 void setup() {
     Serial.begin(9600);
     Serial.println("Starting babbler-powered device, type help for list of commands");
     
     babbler_serial_set_packet_filter(packet_filter_newline);
-    babbler_serial_set_input_handler(handle_input_simple);
+    babbler_serial_set_input_handler(handle_input);
     //babbler_serial_setup(
     //    serial_read_buffer, SERIAL_READ_BUFFER_SIZE,
     //    serial_write_buffer, SERIAL_WRITE_BUFFER_SIZE,
@@ -164,8 +195,8 @@ void setup() {
         serial_read_buffer, SERIAL_READ_BUFFER_SIZE,
         serial_write_buffer, SERIAL_WRITE_BUFFER_SIZE,
         BABBLER_SERIAL_SKIP_PORT_INIT);
-        
-        
+    
+    
     pinMode(LED_PIN, OUTPUT);
 }
 

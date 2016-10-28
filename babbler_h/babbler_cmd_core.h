@@ -21,12 +21,12 @@ extern const babbler_man_t MAN_PING;
 /** 
  * Вывести список команд.
  */
-int cmd_help(char* reply_buffer, int argc=0, char *argv[]=NULL);
+int cmd_help(char* reply_buffer, int reply_buf_size, int argc=0, char *argv[]=NULL);
 
 /** 
  * Проверить доступность устройства.
  */
-int cmd_ping(char* reply_buffer, int argc=0, char *argv[]=NULL);
+int cmd_ping(char* reply_buffer, int reply_buf_size, int argc=0, char *argv[]=NULL);
 
 #endif // BABBLER_CMD_CORE_H
 
