@@ -1,5 +1,7 @@
 # babbler_h
 
+![babbler screencast](/babbler_screencast.gif)
+
 самый простой пример
 
 ```c++
