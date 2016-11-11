@@ -48,8 +48,11 @@ int handle_input(char* input_buffer, int input_len, char* reply_buffer, int repl
     
     // как-нибудь отреагируем на запрос - пусть будет простое эхо
     // react somehow for request - let it be simple echo
-    sprintf(reply_buffer, "you say: %s\n", input_buffer);
-  
+    if(reply_buf_size > input_len + 10)
+        sprintf(reply_buffer, "you say: %s\n", input_buffer);
+    else
+        sprintf(reply_buffer, "you are too verbose\n");
+    
     return strlen(reply_buffer);
 }
 
