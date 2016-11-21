@@ -24,7 +24,6 @@ char serial_write_buffer[SERIAL_WRITE_BUFFER_SIZE];
  * @return длина ответа в байтах или код ошибки
  *     >0, <=reply_buf_size: количество байт, записанных в reply_buffer
  *     0: не отправлять ответ
- *    -1: ошибка при формировании ответа (не хватило места в буфере, ошибка выделения памяти и т.п.)
  */
 /**
  * Handle input data: parse string, run one or multiple commands, 
@@ -38,7 +37,6 @@ char serial_write_buffer[SERIAL_WRITE_BUFFER_SIZE];
  * @return length of reply in bytes or error code
  *     >0, <=reply_buf_size: number of bytes, written to reply_buffer
  *     0: don't send reply
- *    -1: error while constructing reply (not enought space in reply_buffer, dynamic memory error etc)
  */
 int handle_input(char* input_buffer, int input_len, char* reply_buffer, int reply_buf_size) {
     // добавим к входным данным завершающий ноль, 
@@ -51,7 +49,7 @@ int handle_input(char* input_buffer, int input_len, char* reply_buffer, int repl
     if(reply_buf_size > input_len + 10)
         sprintf(reply_buffer, "you say: %s\n", input_buffer);
     else
-        sprintf(reply_buffer, "you are too verbose\n");
+        sprintf(reply_buffer, "you are too verbose, dear\n");
     
     return strlen(reply_buffer);
 }

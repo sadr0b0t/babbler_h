@@ -30,7 +30,6 @@ void babbler_serial_set_packet_filter(packet_filter is_packet);
  *     handle_input:@return длина ответа в байтах или код ошибки
  *     >0, <=reply_buf_size: количество байт, записанных в reply_buffer
  *     0: не отправлять ответ
- *    -1: ошибка при формировании ответа (не хватило места в буфере)
  */
 void babbler_serial_set_input_handler(input_handler handle_input);
 

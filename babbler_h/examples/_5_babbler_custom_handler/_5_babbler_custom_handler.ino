@@ -54,7 +54,6 @@ extern const int BABBLER_MANUALS_COUNT = sizeof(BABBLER_MANUALS)/sizeof(babbler_
  * @return длина ответа в байтах или код ошибки
  *     >0, <=reply_buf_size: количество байт, записанных в reply_buffer
  *     0: не отправлять ответ
- *    -1: ошибка при формировании ответа (не хватило места в буфере)
  */
 /**
  * Handle input data: parse string, run one or multiple commands, 
@@ -68,7 +67,6 @@ extern const int BABBLER_MANUALS_COUNT = sizeof(BABBLER_MANUALS)/sizeof(babbler_
  * @return length of reply in bytes or error code
  *     >0, <=reply_buf_size: number of bytes, written to reply_buffer
  *     0: don't send reply
- *    -1: error while constructing reply (not enought space in reply_buffer)
  */
 int handle_input(char* input_buffer, int input_len, char* reply_buffer, int reply_buf_size) {
     // "распакуем" пакет: добавим завершающий ноль, срежем перевод строки (если есть)

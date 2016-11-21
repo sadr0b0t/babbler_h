@@ -212,7 +212,6 @@ int write_reply_error(char* reply_buffer, int error_code, int reply_buf_size) {
  * @return length of reply in bytes or error code
  *     >0, <=reply_buf_size: number of bytes, written to reply_buffer
  *     0: don't send reply
- *    -1: error while constructing reply (not enought space in reply_buffer)
  */
 int handle_input_simple(char* input_buffer, int input_len, char* reply_buffer, int reply_buf_size) {
     // "распакуем" пакет: добавим завершающий ноль, срежем перевод строки (если есть)

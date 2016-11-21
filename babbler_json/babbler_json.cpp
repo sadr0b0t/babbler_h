@@ -133,7 +133,6 @@ int wrap_reply_with_id_json(char* cmd, char* cmd_id, int argc, char* argv[], cha
  * @return длина ответа в байтах или код ошибки
  *     >0, <=reply_buf_size: количество байт, записанных в reply_buffer
  *     0: не отправлять ответ
- *    -1: ошибка при формировании ответа (не хватило места в буфере, ошибка выделения памяти и т.п.)
  */
 int handle_command_json(char* buffer, char* reply_buffer, int reply_buf_size, 
             int (*wrap_reply)(char* cmd, char* cmd_id, int argc, char* argv[], char* reply_buffer, int reply_buf_size)) {

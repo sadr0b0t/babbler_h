@@ -99,7 +99,6 @@ int handle_command_json(char* input_buffer, char* reply_buffer, int reply_buf_si
  * @return длина ответа в байтах или код ошибки
  *     >0, <=reply_buf_size: количество байт, записанных в reply_buffer
  *     0: не отправлять ответ
- *    -1: ошибка при формировании ответа (не хватило места в буфере)
  */
 /**
  * Handle input data: parse string, run one or multiple commands, 
@@ -113,7 +112,6 @@ int handle_command_json(char* input_buffer, char* reply_buffer, int reply_buf_si
  * @return length of reply in bytes or error code
  *     >0, <=reply_buf_size: number of bytes, written to reply_buffer
  *     0: don't send reply
- *    -1: error while constructing reply (not enought space in reply_buffer)
  */
 int handle_input_json(char* input_buffer, int input_len, char* reply_buffer, int reply_buf_size);
 
