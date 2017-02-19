@@ -79,11 +79,11 @@ int wrap_reply_with_id_json(char* cmd, char* cmd_id, int argc, char* argv[], cha
             // будем считать, что там объект JSON и не будем брать его
             // в кавычки
             sprintf(cmd_reply_buffer, 
-                "{\"cmd\": \"%s\", \"id\": \"%s\", \"reply\": \"%s\"}", 
+                "{\"cmd\":\"%s\",\"id\":\"%s\",\"reply\":\"%s\"}", 
                 cmd, cmd_id, reply_buffer);
         } else {
             sprintf(cmd_reply_buffer, 
-                "{\"cmd\": \"%s\", \"id\": \"%s\", \"reply\": \"%s\"}", 
+                "{\"cmd\":\"%s\",\"id\":\"%s\",\"reply\":\"%s\"}", 
                 cmd, cmd_id, reply_buffer);
         }
     } else {
@@ -93,11 +93,11 @@ int wrap_reply_with_id_json(char* cmd, char* cmd_id, int argc, char* argv[], cha
             // будем считать, что там объект JSON и не будем брать его
             // в кавычки
             sprintf(cmd_reply_buffer, 
-                "{\"cmd\": \"%s\", \"reply\": \"%s\"}", 
+                "{\"cmd\":\"%s\",\"reply\":\"%s\"}", 
                 cmd, reply_buffer);
         } else {
             sprintf(cmd_reply_buffer, 
-                "{\"cmd\": \"%s\", \"reply\": \"%s\"}", 
+                "{\"cmd\":\"%s\",\"reply\":\"%s\"}", 
                 cmd, reply_buffer);
         }
     }
