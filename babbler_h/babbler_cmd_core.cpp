@@ -33,7 +33,7 @@ extern const babbler_cmd_t CMD_PING = {
 
 extern const babbler_man_t MAN_PING = {
     "ping",
-    "check if device is available", 
+    "check if device is available",
     "SYNOPSIS\n"
     "    ping\n"
     "DESCRIPTION\n"

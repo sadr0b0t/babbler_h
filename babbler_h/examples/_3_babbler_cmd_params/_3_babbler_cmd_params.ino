@@ -90,7 +90,7 @@ int cmd_digital_write(char* reply_buffer, int reply_buf_size, int argc, char *ar
     // ожидаемые параметры
     // argv[0] - имя команды "digital_write" (первый параметр всегда имя команды)
     // argv[1] - номер пина
-    // argv[2] - значение: HIGH/1/LOW/0 
+    // argv[2] - значение: HIGH/1/LOW/0
     // expected params
     // argv[0] - cmd name: "digital_write" (1st param is always command name)
     // argv[1] - pin number
@@ -105,7 +105,7 @@ int cmd_digital_write(char* reply_buffer, int reply_buf_size, int argc, char *ar
             // с номером пина все ок,
             // распознать значение HIGH/1/LOW/0 из 3го параметра
             // pin number is ok,
-            // parse value HIGH/1/LOW/0 from the 3rd param 
+            // parse value HIGH/1/LOW/0 from the 3rd param
             char* valStr = argv[2];
             if(strcmp("HIGH", valStr) == 0 || strcmp("1", valStr) == 0) {
                 // выполнить команду
@@ -147,19 +147,19 @@ int cmd_digital_write(char* reply_buffer, int reply_buf_size, int argc, char *ar
 }
 
 babbler_cmd_t CMD_PIN_MODE = {
-    /* имя команды */ 
+    /* имя команды */
     /* command name */
     "pin_mode",
-    /* указатель на функцию с реализацией команды */ 
-    /* pointer to function with command implementation*/ 
+    /* указатель на функцию с реализацией команды */
+    /* pointer to function with command implementation*/
     &cmd_pin_mode
 };
 
 babbler_man_t MAN_PIN_MODE = {
-    /* имя команды */ 
+    /* имя команды */
     /* command name */
     "pin_mode",
-    /* краткое описание */ 
+    /* краткое описание */
     /* short description */
     "set pin mode: INPUT/OUTPUT",
     /* руководство */ 
@@ -174,22 +174,22 @@ babbler_man_t MAN_PIN_MODE = {
 };
 
 babbler_cmd_t CMD_DIGITAL_WRITE = {
-    /* имя команды */ 
+    /* имя команды */
     /* command name */
     "digital_write",
-    /* указатель на функцию с реализацией команды */ 
-    /* pointer to function with command implementation*/ 
+    /* указатель на функцию с реализацией команды */
+    /* pointer to function with command implementation*/
     &cmd_digital_write
 };
 
 babbler_man_t MAN_DIGITAL_WRITE = {
-    /* имя команды */ 
+    /* имя команды */
     /* command name */
     "digital_write",
-    /* краткое описание */ 
+    /* краткое описание */
     /* short description */
-    "write digital value HIGH/LOW (1/0) to output port", 
-    /* подробное описание */ 
+    "write digital value HIGH/LOW (1/0) to output port",
+    /* подробное описание */
     /* detailed description */
     "SYNOPSIS\n"
     "    digital_write pin val\n"

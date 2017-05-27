@@ -17,11 +17,13 @@ char serial_read_buffer[SERIAL_READ_BUFFER_SIZE+1];
 char serial_write_buffer[SERIAL_WRITE_BUFFER_SIZE];
 
 #define LED_PIN 13
+bool ledison = false;
 
 /** Реализация команды ledon (включить лампочку) */
 /** ledon (turn led ON) command implementation */
 int cmd_ledon(char* reply_buffer, int reply_buf_size, int argc=0, char *argv[]=NULL) {
     digitalWrite(LED_PIN, HIGH);
+    ledison = true;
     
     // команда выполнена
     strcpy(reply_buffer, REPLY_OK);
@@ -32,29 +34,42 @@ int cmd_ledon(char* reply_buffer, int reply_buf_size, int argc=0, char *argv[]=N
 /** ledoff (turn led OFF) command implementation */
 int cmd_ledoff(char* reply_buffer, int reply_buf_size, int argc=0, char *argv[]=NULL) {
     digitalWrite(LED_PIN, LOW);
+    ledison = false;
     
     // команда выполнена
     strcpy(reply_buffer, REPLY_OK);
     return strlen(reply_buffer);
 }
 
+/** Реализация команды ledstatus (cтатус лампочки) */
+/** ledstatus (get led status) command implementation */
+int cmd_ledstatus(char* reply_buffer, int reply_buf_size, int argc=0, char *argv[]=NULL) {
+    if(ledison) {
+        strcpy(reply_buffer, "on");
+    } else {
+        strcpy(reply_buffer, "off");
+    }
+    
+    return strlen(reply_buffer);
+}
+
 babbler_cmd_t CMD_LEDON = {
-    /* имя команды */ 
+    /* имя команды */
     /* command name */
     "ledon",
-    /* указатель на функцию с реализацией команды */ 
-    /* pointer to function with command implementation*/ 
+    /* указатель на функцию с реализацией команды */
+    /* pointer to function with command implementation*/
     &cmd_ledon
 };
 
 babbler_man_t MAN_LEDON = {
-    /* имя команды */ 
+    /* имя команды */
     /* command name */
     "ledon",
-    /* краткое описание */ 
+    /* краткое описание */
     /* short description */
     "turn led ON",
-    /* руководство */ 
+    /* руководство */
     /* manual */
     "SYNOPSIS\n"
     "    ledon\n"
@@ -63,27 +78,51 @@ babbler_man_t MAN_LEDON = {
 };
 
 babbler_cmd_t CMD_LEDOFF = {
-    /* имя команды */ 
+    /* имя команды */
     /* command name */
     "ledoff",
-    /* указатель на функцию с реализацией команды */ 
-    /* pointer to function with command implementation*/ 
+    /* указатель на функцию с реализацией команды */
+    /* pointer to function with command implementation*/
     &cmd_ledoff
 };
 
 babbler_man_t MAN_LEDOFF = {
-    /* имя команды */ 
+    /* имя команды */
     /* command name */
     "ledoff",
-    /* краткое описание */ 
+    /* краткое описание */
     /* short description */
     "turn led OFF",
-    /* руководство */ 
+    /* руководство */
     /* manual */
     "SYNOPSIS\n"
     "    ledoff\n"
     "DESCRIPTION\n"
     "Turn led OFF."
+};
+
+babbler_cmd_t CMD_LEDSTATUS = {
+    /* имя команды */
+    /* command name */
+    "ledstatus",
+    /* указатель на функцию с реализацией команды */
+    /* pointer to function with command implementation*/
+    &cmd_ledstatus
+};
+
+babbler_man_t MAN_LEDSTATUS = {
+    /* имя команды */
+    /* command name */
+    "ledstatus",
+    /* краткое описание */
+    /* short description */
+    "get led status: on/off",
+    /* руководство */
+    /* manual */
+    "SYNOPSIS\n"
+    "    ledstatus\n"
+    "DESCRIPTION\n"
+    "Get led status: on/off."
 };
 
 /** Зарегистрированные команды */
@@ -97,7 +136,8 @@ extern const babbler_cmd_t BABBLER_COMMANDS[] = {
     // пользовательские команды
     // custom commands
     CMD_LEDON,
-    CMD_LEDOFF
+    CMD_LEDOFF,
+    CMD_LEDSTATUS
 };
 
 /** Количество зарегистрированных команд */
@@ -116,7 +156,8 @@ extern const babbler_man_t BABBLER_MANUALS[] = {
     // пользовательские команды
     // custom commands
     MAN_LEDON,
-    MAN_LEDOFF
+    MAN_LEDOFF,
+    MAN_LEDSTATUS
 };
 
 /** Количество руководств для зарегистрированных команд */

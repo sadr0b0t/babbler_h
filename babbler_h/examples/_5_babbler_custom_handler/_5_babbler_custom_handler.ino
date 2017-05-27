@@ -43,7 +43,7 @@ extern const babbler_man_t BABBLER_MANUALS[] = {
 extern const int BABBLER_MANUALS_COUNT = sizeof(BABBLER_MANUALS)/sizeof(babbler_man_t);
 
 /**
- * Обработать входные данные: разобрать строку, выполнить одну или 
+ * Обработать входные данные: разобрать строку, выполнить одну или
  * несколько команд, записать ответ.
  * @param input_buffer - входные данные, массив байт (строка или двоичный)
  * @param input_len - размер входных данных
@@ -54,9 +54,10 @@ extern const int BABBLER_MANUALS_COUNT = sizeof(BABBLER_MANUALS)/sizeof(babbler_
  * @return длина ответа в байтах или код ошибки
  *     >0, <=reply_buf_size: количество байт, записанных в reply_buffer
  *     0: не отправлять ответ
+ *    -1: ошибка при формировании ответа (не хватило места в буфере)
  */
 /**
- * Handle input data: parse string, run one or multiple commands, 
+ * Handle input data: parse string, run one or multiple commands,
  * write reply.
  * @param input_buffer - input data, byte array (string or binary)
  * @param input_len - input data length
@@ -67,11 +68,12 @@ extern const int BABBLER_MANUALS_COUNT = sizeof(BABBLER_MANUALS)/sizeof(babbler_
  * @return length of reply in bytes or error code
  *     >0, <=reply_buf_size: number of bytes, written to reply_buffer
  *     0: don't send reply
+ *    -1: error while constructing reply (not enought space in reply_buffer)
  */
 int handle_input(char* input_buffer, int input_len, char* reply_buffer, int reply_buf_size) {
     // "распакуем" пакет: добавим завершающий ноль, срежем перевод строки (если есть)
     // (места в буфере для дополнительного нуля точно хватит, т.к. даже если длина входных данных
-    // input_len равна размеру буфера SERIAL_READ_BUFFER_SIZE, у нас все равно в буфере есть 
+    // input_len равна размеру буфера SERIAL_READ_BUFFER_SIZE, у нас все равно в буфере есть
     // один лишний байт)
     // "unpack" package: add terminating zero, cut newline at the end (if present)
     // (we have enough space for terminating zero in buffer, because even if input data length
@@ -79,9 +81,12 @@ int handle_input(char* input_buffer, int input_len, char* reply_buffer, int repl
     // one extra byte in the buffer)
     unpack_input_as_str(input_buffer, input_len, true);
     
-    // выполняем команду
-    // execute command
+    // проверить на ошибку
+    // check for error
     int reply_len = handle_command_simple(input_buffer, reply_buffer, reply_buf_size-2);
+    
+    // выполняем команду (reply_buf_size-2 - место для переноса строки и завершающего нуля)
+    // execute command (reply_buf_size-2 - place for newline and terminating zero)
     if(reply_len < 0) {
         reply_len = write_reply_error(reply_buffer, reply_len, reply_buf_size-2);
     }
