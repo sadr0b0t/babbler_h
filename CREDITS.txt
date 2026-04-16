@@ -1,3 +1,0 @@
-JSON parser library in babbler_json/utility is json-parser from
-https://github.com/udp/json-parser
-

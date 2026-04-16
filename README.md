@@ -2,6 +2,11 @@
 
 ![babbler screencast](/babbler_screencast.gif)
 
+Базовая библиотека с API.
+
+Транспорт и примеры для Arduino: https://github.com/sadr0b0t/babbler_ino_h  
+Обертка JSON протокола взаимодействия: https://github.com/sadr0b0t/babbler_json_h  
+
 самый простой пример
 
 ```c++
